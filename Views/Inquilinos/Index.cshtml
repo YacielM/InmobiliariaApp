@@ -1,0 +1,38 @@
+@model IEnumerable<InmobiliariaApp.Models.Inquilino>
+
+@{
+    ViewData["Title"] = "Listado de Inquilinos";
+}
+
+<h1>Inquilinos</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">➕ Crear nuevo</a>
+</p>
+
+<table class="table table-striped table-bordered">
+    <thead class="table-dark">
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.Dni)</th>
+            <th>@Html.DisplayNameFor(model => model.NombreCompleto)</th>
+            <th>@Html.DisplayNameFor(model => model.Telefono)</th>
+            <th>@Html.DisplayNameFor(model => model.Email)</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>@item.Dni</td>
+            <td>@item.NombreCompleto</td>
+            <td>@item.Telefono</td>
+            <td>@item.Email</td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.IdInquilino" class="btn btn-warning btn-sm">✏ Editar</a>
+                <a asp-action="Details" asp-route-id="@item.IdInquilino" class="btn btn-info btn-sm text-white">ℹ Detalles</a>
+                <a asp-action="Delete" asp-route-id="@item.IdInquilino" class="btn btn-danger btn-sm">🗑 Eliminar</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

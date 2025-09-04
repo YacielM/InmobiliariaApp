@@ -3,6 +3,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+// Registrar repositorios para inyección de dependencias
+builder.Services.AddScoped<InmobiliariaApp.Data.Repositorios.RepositorioPropietarios>();
+builder.Services.AddScoped<InmobiliariaApp.Data.Repositorios.RepositorioInquilinos>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

@@ -17,6 +17,5 @@
         [EmailAddress(ErrorMessage = "Formato de email inválido.")]
         [StringLength(150, ErrorMessage = "El email no puede exceder los 150 caracteres.")]
         public string Email { get; set; }
-        
     }
  }

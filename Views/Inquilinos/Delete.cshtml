@@ -1,0 +1,32 @@
+@model InmobiliariaApp.Models.Inquilino
+
+@{
+    ViewData["Title"] = "Eliminar Inquilino";
+}
+
+<h1>Eliminar Inquilino</h1>
+
+<h3>¿Seguro que querés eliminar este registro?</h3>
+<div>
+    <h4>Inquilino</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">DNI</dt>
+        <dd class="col-sm-10">@Model.Dni</dd>
+
+        <dt class="col-sm-2">Nombre Completo</dt>
+        <dd class="col-sm-10">@Model.NombreCompleto</dd>
+
+        <dt class="col-sm-2">Teléfono</dt>
+        <dd class="col-sm-10">@Model.Telefono</dd>
+
+        <dt class="col-sm-2">Email</dt>
+        <dd class="col-sm-10">@Model.Email</dd>
+    </dl>
+
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="IdInquilino" />
+        <button type="submit" class="btn btn-danger">🗑 Eliminar</button>
+        <a asp-action="Index" class="btn btn-secondary">⬅ Cancelar</a>
+    </form>
+</div>
