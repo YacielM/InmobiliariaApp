@@ -1,0 +1,57 @@
+@model InmobiliariaApp.Models.Inmueble
+
+@{
+    ViewData["Title"] = "Editar Inmueble";
+}
+
+<h1>Editar Inmueble</h1>
+
+<form asp-action="Edit">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <!-- Campo oculto para el ID -->
+    <input type="hidden" asp-for="IdInmueble" />
+
+    <div class="mb-3">
+        <label asp-for="Direccion" class="form-label"></label>
+        <input asp-for="Direccion" class="form-control" />
+        <span asp-validation-for="Direccion" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Uso" class="form-label"></label>
+        <input asp-for="Uso" class="form-control" />
+        <span asp-validation-for="Uso" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Tipo" class="form-label"></label>
+        <input asp-for="Tipo" class="form-control" />
+        <span asp-validation-for="Tipo" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Ambientes" class="form-label"></label>
+        <input asp-for="Ambientes" class="form-control" />
+        <span asp-validation-for="Ambientes" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Precio" class="form-label"></label>
+        <input asp-for="Precio" class="form-control" type="number" step="any" min="0" />
+        <span asp-validation-for="Precio" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="IdPropietario" class="form-label">Propietario</label>
+        <select asp-for="IdPropietario" class="form-select" asp-items="ViewBag.Propietarios"></select>
+        <span asp-validation-for="IdPropietario" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">💾 Guardar cambios</button>
+    <a asp-action="Index" class="btn btn-secondary">⬅ Volver</a>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

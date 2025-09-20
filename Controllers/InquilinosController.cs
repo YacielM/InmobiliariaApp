@@ -1,36 +1,43 @@
 using InmobiliariaApp.Models;
- using InmobiliariaApp.Data.Repositorios;
- using Microsoft.AspNetCore.Mvc;
- namespace InmobiliariaApp.Controllers
- {
+using InmobiliariaApp.Data.Repositorios;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+
+namespace InmobiliariaApp.Controllers
+{
     public class InquilinosController : Controller
     {
         private readonly RepositorioInquilinos _repositorioInquilinos;
-        public InquilinosController(RepositorioInquilinos repositorioInquilinos)
+
+        public InquilinosController(IConfiguration configuration)
         {
-            _repositorioInquilinos = repositorioInquilinos;
+            _repositorioInquilinos = new RepositorioInquilinos(configuration);
         }
+
         // GET: Inquilinos
         public IActionResult Index()
         {
-            var inquilinos = _repositorioInquilinos.GetAll();
+            var inquilinos = _repositorioInquilinos.ObtenerTodos();
             return View(inquilinos);
         }
+
         // GET: Inquilinos/Details/5
         public IActionResult Details(int id)
         {
-            var inquilino = _repositorioInquilinos.GetById(id);
+            var inquilino = _repositorioInquilinos.ObtenerPorId(id);
             if (inquilino == null)
             {
                 return NotFound();
             }
             return View(inquilino);
         }
+
         // GET: Inquilinos/Create
         public IActionResult Create()
         {
             return View();
         }
+
         // POST: Inquilinos/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -38,21 +45,23 @@ using InmobiliariaApp.Models;
         {
             if (ModelState.IsValid)
             {
-                _repositorioInquilinos.Insert(inquilino);
+                _repositorioInquilinos.Alta(inquilino);
                 return RedirectToAction(nameof(Index));
             }
             return View(inquilino);
         }
+
         // GET: Inquilinos/Edit/5
         public IActionResult Edit(int id)
         {
-            var inquilino = _repositorioInquilinos.GetById(id);
+            var inquilino = _repositorioInquilinos.ObtenerPorId(id);
             if (inquilino == null)
             {
                 return NotFound();
             }
             return View(inquilino);
         }
+
         // POST: Inquilinos/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -64,28 +73,30 @@ using InmobiliariaApp.Models;
             }
             if (ModelState.IsValid)
             {
-                _repositorioInquilinos.Update(inquilino);
+                _repositorioInquilinos.Modificacion(inquilino);
                 return RedirectToAction(nameof(Index));
             }
             return View(inquilino);
         }
+
         // GET: Inquilinos/Delete/5
         public IActionResult Delete(int id)
         {
-            var inquilino = _repositorioInquilinos.GetById(id);
+            var inquilino = _repositorioInquilinos.ObtenerPorId(id);
             if (inquilino == null)
             {
                 return NotFound();
             }
             return View(inquilino);
         }
+
         // POST: Inquilinos/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {
-            _repositorioInquilinos.Delete(id);
+            _repositorioInquilinos.Baja(id);
             return RedirectToAction(nameof(Index));
         }
     }
- }
+}

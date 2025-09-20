@@ -1,14 +1,16 @@
- using InmobiliariaApp.Models;
- using MySql.Data.MySqlClient;
- using Microsoft.Extensions.Configuration;
- using System.Collections.Generic;
- namespace InmobiliariaApp.Data.Repositorios
- {
+using InmobiliariaApp.Models;
+using MySql.Data.MySqlClient;
+using Microsoft.Extensions.Configuration;
+using System.Collections.Generic;
+
+namespace InmobiliariaApp.Data.Repositorios
+{
     public class RepositorioInquilinos : ConexionBase
     {
         public RepositorioInquilinos(IConfiguration configuration) : base(configuration) { }
-        // Método para obtener todos los inquilinos
-        public List<Inquilino> GetAll()
+
+        // Obtener todos los inquilinos
+        public List<Inquilino> ObtenerTodos()
         {
             var inquilinos = new List<Inquilino>();
             using (var connection = GetConnection())
@@ -32,8 +34,9 @@
             }
             return inquilinos;
         }
-        // Método para obtener un inquilino por su ID
-        public Inquilino GetById(int id)
+
+        // Obtener un inquilino por ID
+        public Inquilino ObtenerPorId(int id)
         {
             Inquilino inquilino = null;
             using (var connection = GetConnection())
@@ -58,8 +61,9 @@
             }
             return inquilino;
         }
-        // Método para insertar un nuevo inquilino
-        public int Insert(Inquilino inquilino)
+
+        // Insertar un nuevo inquilino
+        public int Alta(Inquilino inquilino)
         {
             using (var connection = GetConnection())
             {
@@ -70,12 +74,13 @@
                 command.Parameters.AddWithValue("@NombreCompleto", inquilino.NombreCompleto);
                 command.Parameters.AddWithValue("@Telefono", (object)inquilino.Telefono ?? DBNull.Value);
                 command.Parameters.AddWithValue("@Email", inquilino.Email);
-                
+
                 return Convert.ToInt32(command.ExecuteScalar());
             }
         }
-        // Método para actualizar un inquilino existente
-        public bool Update(Inquilino inquilino)
+
+        // Actualizar un inquilino existente
+        public bool Modificacion(Inquilino inquilino)
         {
             using (var connection = GetConnection())
             {
@@ -90,8 +95,9 @@
                 return command.ExecuteNonQuery() > 0;
             }
         }
-        // Método para eliminar un inquilino
-        public bool Delete(int id)
+
+        // Eliminar un inquilino
+        public bool Baja(int id)
         {
             using (var connection = GetConnection())
             {
@@ -102,4 +108,4 @@
             }
         }
     }
- }
+}

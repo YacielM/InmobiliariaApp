@@ -1,0 +1,44 @@
+@model InmobiliariaApp.Models.Contrato
+
+@{
+    ViewData["Title"] = "Crear Contrato";
+}
+
+<h1>Crear Contrato</h1>
+
+<form asp-action="Create" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="mb-3">
+        <label asp-for="IdInmueble" class="form-label">Inmueble</label>
+        <select asp-for="IdInmueble" class="form-select" asp-items="ViewBag.Inmuebles"></select>
+        <span asp-validation-for="IdInmueble" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="IdInquilino" class="form-label">Inquilino</label>
+        <select asp-for="IdInquilino" class="form-select" asp-items="ViewBag.Inquilinos"></select>
+        <span asp-validation-for="IdInquilino" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="FechaInicio" class="form-label"></label>
+        <input asp-for="FechaInicio" type="date" class="form-control" />
+        <span asp-validation-for="FechaInicio" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="FechaFin" class="form-label"></label>
+        <input asp-for="FechaFin" type="date" class="form-control" />
+        <span asp-validation-for="FechaFin" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="MontoMensual" class="form-label"></label>
+        <input asp-for="MontoMensual" class="form-control" />
+        <span asp-validation-for="MontoMensual" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">💾 Guardar</button>
+    <a asp-action="Index" class="btn btn-secondary">⬅ Volver</a>
+</form>
