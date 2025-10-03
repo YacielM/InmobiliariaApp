@@ -1,15 +1,19 @@
 using MySql.Data.MySqlClient;
+using Microsoft.Extensions.Configuration;
+using System.Collections.Generic;
+using InmobiliariaApp.Data;
+
 
 namespace InmobiliariaApp.Models
 {
-    public class RepositorioContratos
+    public class RepositorioContratos : ConexionBase
     {
-        private readonly string connectionString = "Server=localhost;Database=inmobiliaria_db;Uid=root;Pwd=admin;";
+        public RepositorioContratos(IConfiguration configuration) : base(configuration) { }
 
         public List<Contrato> ObtenerTodos()
         {
             var lista = new List<Contrato>();
-            using (var conn = new MySqlConnection(connectionString))
+            using (var conn = GetConnection())
             {
                 var sql = @"SELECT c.IdContrato, c.IdInmueble, c.IdInquilino, c.FechaInicio, c.FechaFin, c.MontoMensual,
                                    i.Direccion,
@@ -43,7 +47,7 @@ namespace InmobiliariaApp.Models
         public Contrato ObtenerPorId(int id)
         {
             Contrato contrato = null;
-            using (var conn = new MySqlConnection(connectionString))
+            using (var conn = GetConnection())
             {
                 var sql = @"SELECT c.IdContrato, c.IdInmueble, c.IdInquilino, c.FechaInicio, c.FechaFin, c.MontoMensual,
                                    i.Direccion,
@@ -79,7 +83,7 @@ namespace InmobiliariaApp.Models
         public int Alta(Contrato contrato)
         {
             int res = -1;
-            using (var conn = new MySqlConnection(connectionString))
+            using (var conn = GetConnection())
             {
                 var sql = @"INSERT INTO Contratos (IdInmueble, IdInquilino, FechaInicio, FechaFin, MontoMensual)
                             VALUES (@IdInmueble, @IdInquilino, @FechaInicio, @FechaFin, @MontoMensual)";
@@ -100,7 +104,7 @@ namespace InmobiliariaApp.Models
         public int Modificacion(Contrato contrato)
         {
             int res = -1;
-            using (var conn = new MySqlConnection(connectionString))
+            using (var conn = GetConnection())
             {
                 var sql = @"UPDATE Contratos SET IdInmueble=@IdInmueble, IdInquilino=@IdInquilino, 
                             FechaInicio=@FechaInicio, FechaFin=@FechaFin, MontoMensual=@MontoMensual
@@ -123,7 +127,7 @@ namespace InmobiliariaApp.Models
         public int Baja(int id)
         {
             int res = -1;
-            using (var conn = new MySqlConnection(connectionString))
+            using (var conn = GetConnection())
             {
                 var sql = "DELETE FROM Contratos WHERE IdContrato=@id";
                 using (var cmd = new MySqlCommand(sql, conn))
@@ -134,6 +138,28 @@ namespace InmobiliariaApp.Models
                 }
             }
             return res;
+        }
+
+        // 🔎 Nuevo: método para controlar superposición de fechas
+        public bool ExisteSuperposicion(int idInmueble, DateTime inicio, DateTime fin, int? idContrato = null)
+        {
+            using (var conn = GetConnection())
+            {
+                var sql = @"SELECT COUNT(*) FROM Contratos
+                            WHERE IdInmueble = @IdInmueble
+                              AND IdContrato <> IFNULL(@IdContrato, 0)
+                              AND ( (FechaInicio <= @Fin AND FechaFin >= @Inicio) )";
+                using (var cmd = new MySqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@IdInmueble", idInmueble);
+                    cmd.Parameters.AddWithValue("@Inicio", inicio);
+                    cmd.Parameters.AddWithValue("@Fin", fin);
+                    cmd.Parameters.AddWithValue("@IdContrato", idContrato.HasValue ? idContrato.Value : 0);
+                    conn.Open();
+                    var count = Convert.ToInt32(cmd.ExecuteScalar());
+                    return count > 0;
+                }
+            }
         }
     }
 }

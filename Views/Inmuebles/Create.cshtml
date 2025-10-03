@@ -21,9 +21,10 @@
 
     <div class="mb-3">
         <label asp-for="Tipo" class="form-label"></label>
-        <input asp-for="Tipo" class="form-control" />
+        <select asp-for="Tipo" class="form-select" asp-items="ViewBag.Tipos"></select>
         <span asp-validation-for="Tipo" class="text-danger"></span>
     </div>
+
 
     <div class="mb-3">
         <label asp-for="Ambientes" class="form-label"></label>

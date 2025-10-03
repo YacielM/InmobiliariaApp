@@ -14,7 +14,7 @@ namespace InmobiliariaApp.Controllers
 
         public ContratosController(IConfiguration configuration)
         {
-            repo = new RepositorioContratos();
+            repo = new RepositorioContratos(configuration);
             repoInmuebles = new RepositorioInmuebles(configuration);
             repoInquilinos = new RepositorioInquilinos(configuration);
         }

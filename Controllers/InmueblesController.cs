@@ -4,6 +4,7 @@ using InmobiliariaApp.Models;
 using InmobiliariaApp.Data.Repositorios;
 using Microsoft.Extensions.Configuration;
 using System.Linq;
+using System;
 
 namespace InmobiliariaApp.Controllers
 {
@@ -37,6 +38,7 @@ namespace InmobiliariaApp.Controllers
         public IActionResult Create()
         {
             CargarComboPropietarios();
+            CargarTiposInmueble();
             return View();
         }
 
@@ -47,7 +49,6 @@ namespace InmobiliariaApp.Controllers
         {
             if (!ModelState.IsValid)
             {
-                // Mostrar errores de validación en consola
                 foreach (var e in ModelState.Values.SelectMany(v => v.Errors))
                 {
                     Console.WriteLine("Error de ModelState: " + e.ErrorMessage);
@@ -55,6 +56,7 @@ namespace InmobiliariaApp.Controllers
 
                 ModelState.AddModelError(string.Empty, "Hay errores en el formulario. Revisá los campos.");
                 CargarComboPropietarios(inmueble.IdPropietario);
+                CargarTiposInmueble(inmueble.Tipo);
                 return View(inmueble);
             }
 
@@ -65,6 +67,7 @@ namespace InmobiliariaApp.Controllers
                 {
                     ModelState.AddModelError(string.Empty, "No se pudo guardar el inmueble en la base de datos.");
                     CargarComboPropietarios(inmueble.IdPropietario);
+                    CargarTiposInmueble(inmueble.Tipo);
                     return View(inmueble);
                 }
             }
@@ -72,6 +75,7 @@ namespace InmobiliariaApp.Controllers
             {
                 ModelState.AddModelError(string.Empty, $"Error al guardar: {ex.Message}");
                 CargarComboPropietarios(inmueble.IdPropietario);
+                CargarTiposInmueble(inmueble.Tipo);
                 return View(inmueble);
             }
 
@@ -86,6 +90,7 @@ namespace InmobiliariaApp.Controllers
             if (inmueble == null) return NotFound();
 
             CargarComboPropietarios(inmueble.IdPropietario);
+            CargarTiposInmueble(inmueble.Tipo);
             return View(inmueble);
         }
 
@@ -103,6 +108,7 @@ namespace InmobiliariaApp.Controllers
 
                 ModelState.AddModelError(string.Empty, "Hay errores en el formulario. Revisá los campos.");
                 CargarComboPropietarios(inmueble.IdPropietario);
+                CargarTiposInmueble(inmueble.Tipo);
                 return View(inmueble);
             }
 
@@ -113,6 +119,7 @@ namespace InmobiliariaApp.Controllers
                 {
                     ModelState.AddModelError(string.Empty, "No se pudo actualizar el inmueble.");
                     CargarComboPropietarios(inmueble.IdPropietario);
+                    CargarTiposInmueble(inmueble.Tipo);
                     return View(inmueble);
                 }
             }
@@ -120,6 +127,7 @@ namespace InmobiliariaApp.Controllers
             {
                 ModelState.AddModelError(string.Empty, $"Error al actualizar: {ex.Message}");
                 CargarComboPropietarios(inmueble.IdPropietario);
+                CargarTiposInmueble(inmueble.Tipo);
                 return View(inmueble);
             }
 
@@ -146,20 +154,22 @@ namespace InmobiliariaApp.Controllers
                 if (filas <= 0)
                 {
                     ModelState.AddModelError(string.Empty, "No se pudo eliminar el inmueble.");
-                    return View(repoInmuebles.ObtenerPorId(id));
+                    var inmueble = repoInmuebles.ObtenerPorId(id);
+                    return View(inmueble);
                 }
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError(string.Empty, $"Error al eliminar: {ex.Message}");
-                return View(repoInmuebles.ObtenerPorId(id));
+                var inmueble = repoInmuebles.ObtenerPorId(id);
+                return View(inmueble);
             }
 
             TempData["Msg"] = "Inmueble eliminado correctamente.";
             return RedirectToAction(nameof(Index));
         }
 
-        // Método privado para cargar el combo de propietarios con Apellido + Nombre
+        // Combo propietarios: Apellido + Nombre
         private void CargarComboPropietarios(int? idSeleccionado = null)
         {
             var propietarios = repoPropietarios.GetAll()
@@ -175,6 +185,21 @@ namespace InmobiliariaApp.Controllers
                 "NombreCompleto",
                 idSeleccionado
             );
+        }
+
+        // Combo tipos de inmueble (enum/diccionario simple)
+        private void CargarTiposInmueble(string? tipoSeleccionado = null)
+        {
+            var tipos = new[]
+            {
+                new { Valor = "Casa", Texto = "Casa" },
+                new { Valor = "Departamento", Texto = "Departamento" },
+                new { Valor = "Duplex", Texto = "Dúplex" },
+                new { Valor = "Monoambiente", Texto = "Monoambiente" },
+                new { Valor = "PH", Texto = "PH" },
+            };
+
+            ViewBag.Tipos = new SelectList(tipos, "Valor", "Texto", tipoSeleccionado);
         }
     }
 }

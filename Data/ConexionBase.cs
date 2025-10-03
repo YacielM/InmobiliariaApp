@@ -7,7 +7,9 @@ using MySql.Data.MySqlClient;
         protected readonly string _connectionString;
         public ConexionBase(IConfiguration configuration)
         {
-            _connectionString = configuration.GetConnectionString("DefaultConnection");
+            _connectionString = configuration.GetConnectionString("DefaultConnection")
+                    ?? throw new InvalidOperationException("Cadena de conexión no encontrada");
+
         }
         protected MySqlConnection GetConnection()
         {
