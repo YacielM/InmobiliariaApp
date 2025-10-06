@@ -28,5 +28,14 @@ namespace InmobiliariaApp.Models
 
         [ValidateNever] // idem para inquilino
         public Inquilino Inquilino { get; set; }
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+    {
+        if (FechaFin < FechaInicio)
+        {
+            yield return new ValidationResult(
+                "La fecha de fin no puede ser anterior a la fecha de inicio.",
+                new[] { nameof(FechaFin) });
+        }
+    }
     }
 }

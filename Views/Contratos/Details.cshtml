@@ -25,3 +25,17 @@
 
 <a asp-action="Edit" asp-route-id="@Model.IdContrato" class="btn btn-warning">✏ Editar</a>
 <a asp-action="Index" class="btn btn-secondary">⬅ Volver</a>
+<div class="mt-3">
+    <a asp-controller="Pagos"
+       asp-action="Create"
+       asp-route-idContrato="@Model.IdContrato"
+       class="btn btn-success">
+        ➕ Agregar pago a este contrato
+    </a>
+
+    <a asp-controller="Pagos"
+       asp-action="Index"
+       class="btn btn-outline-primary">
+        Ver pagos
+    </a>
+</div>
