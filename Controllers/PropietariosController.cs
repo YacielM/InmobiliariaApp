@@ -1,7 +1,8 @@
 using InmobiliariaApp.Models;
  using InmobiliariaApp.Data.Repositorios;
  using Microsoft.AspNetCore.Mvc;
- namespace InmobiliariaApp.Controllers
+using Microsoft.AspNetCore.Authorization;
+namespace InmobiliariaApp.Controllers
  {
     public class PropietariosController : Controller
     {
@@ -70,6 +71,7 @@ using InmobiliariaApp.Models;
             return View(propietario);
         }
         // GET: Propietarios/Delete/5
+        [Authorize(Roles = "Administrador")]
         public IActionResult Delete(int id)
         {
             var propietario = _repositorioPropietarios.GetById(id);
@@ -82,6 +84,7 @@ using InmobiliariaApp.Models;
         // POST: Propietarios/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador")]
         public IActionResult DeleteConfirmed(int id)
         {
             _repositorioPropietarios.Delete(id);

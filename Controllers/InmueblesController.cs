@@ -5,6 +5,7 @@ using InmobiliariaApp.Data.Repositorios;
 using Microsoft.Extensions.Configuration;
 using System.Linq;
 using System;
+using Microsoft.AspNetCore.Authorization;
 
 namespace InmobiliariaApp.Controllers
 {
@@ -136,6 +137,7 @@ namespace InmobiliariaApp.Controllers
         }
 
         // GET: /Inmuebles/Delete/5
+        [Authorize(Roles = "Administrador")]
         public IActionResult Delete(int id)
         {
             var inmueble = repoInmuebles.ObtenerPorId(id);
@@ -146,6 +148,7 @@ namespace InmobiliariaApp.Controllers
         // POST: /Inmuebles/Delete
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador")]
         public IActionResult DeleteConfirmed(int id)
         {
             try

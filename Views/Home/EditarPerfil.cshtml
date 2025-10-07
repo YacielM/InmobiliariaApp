@@ -1,0 +1,61 @@
+@model InmobiliariaApp.Models.Usuario
+
+@{
+    ViewData["Title"] = "Editar Perfil";
+}
+
+<h1>Editar Perfil</h1>
+
+<form asp-action="EditarPerfil" method="post" enctype="multipart/form-data">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <input type="hidden" asp-for="IdUsuario" />
+
+    <div class="mb-3">
+        <label asp-for="Nombre" class="form-label"></label>
+        <input asp-for="Nombre" class="form-control" />
+        <span asp-validation-for="Nombre" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Apellido" class="form-label"></label>
+        <input asp-for="Apellido" class="form-control" />
+        <span asp-validation-for="Apellido" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Email" class="form-label"></label>
+        <input asp-for="Email" class="form-control" readonly />
+    </div>
+
+    <div class="mb-3">
+        <label>Nueva Clave</label>
+        <input asp-for="Clave" class="form-control" type="password" />
+        <span class="text-muted">Dejar vacío si no querés cambiarla</span>
+    </div>
+
+    <div class="mb-3">
+        <label>Avatar actual</label><br />
+        @if (!string.IsNullOrEmpty(Model.Avatar))
+        {
+            <img src="@Model.Avatar" width="80" height="80" class="rounded-circle" />
+            <button type="submit" name="Avatar" value="REMOVE" class="btn btn-danger btn-sm">Quitar avatar</button>
+        }
+        else
+        {
+            <span class="text-muted">Sin avatar</span>
+        }
+    </div>
+
+    <div class="mb-3">
+        <label>Subir nuevo avatar</label>
+        <input type="file" name="avatarFile" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar cambios</button>
+    <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
