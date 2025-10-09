@@ -120,5 +120,44 @@ namespace InmobiliariaApp.Data.Repositorios
                 }
             }
         }
+        public List<Pago> ObtenerPorContrato(int idContrato)
+        {
+            var lista = new List<Pago>();
+            using (var conn = GetConnection())
+            {
+                var sql = @"SELECT p.IdPago, p.IdContrato, p.Fecha, p.Importe,
+                                i.Direccion, inq.NombreCompleto
+                            FROM Pagos p
+                            INNER JOIN Contratos c ON p.IdContrato = c.IdContrato
+                            INNER JOIN Inmuebles i ON c.IdInmueble = i.IdInmueble
+                            INNER JOIN Inquilinos inq ON c.IdInquilino = inq.IdInquilino
+                            WHERE p.IdContrato = @idContrato
+                            ORDER BY p.Fecha DESC";
+                using (var cmd = new MySqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@idContrato", idContrato);
+                    conn.Open();
+                    var reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        lista.Add(new Pago
+                        {
+                            IdPago = reader.GetInt32(0),
+                            IdContrato = reader.GetInt32(1),
+                            Fecha = reader.GetDateTime(2),
+                            Importe = reader.GetDecimal(3),
+                            Contrato = new Contrato
+                            {
+                                IdContrato = reader.GetInt32(1),
+                                Inmueble = new Inmueble { Direccion = reader.GetString(4) },
+                                Inquilino = new Inquilino { NombreCompleto = reader.GetString(5) }
+                            }
+                        });
+                    }
+                }
+            }
+            return lista;
+        }
+
     }
 }

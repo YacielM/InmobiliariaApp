@@ -9,8 +9,10 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace InmobiliariaApp.Controllers
 {
+    [Authorize]
     public class InmueblesController : Controller
     {
+
         private readonly RepositorioInmuebles repoInmuebles;
         private readonly RepositorioPropietarios repoPropietarios;
 
@@ -204,5 +206,41 @@ namespace InmobiliariaApp.Controllers
 
             ViewBag.Tipos = new SelectList(tipos, "Valor", "Texto", tipoSeleccionado);
         }
+
+        // GET: /Inmuebles/Disponibles
+        public IActionResult Disponibles()
+        {
+            var lista = repoInmuebles.ObtenerDisponiblesHoy();
+            return View(lista);
+        }
+
+        // GET: /Inmuebles/PorPropietario/5
+        public IActionResult PorPropietario(int id)
+        {
+            var lista = repoInmuebles.ObtenerPorPropietario(id);
+            var propietario = repoPropietarios.GetById(id);
+            ViewBag.Propietario = propietario;
+            return View(lista);
+        }
+
+        // GET: /Inmuebles/LibresEntreFechas
+        public IActionResult LibresEntreFechas(DateTime? inicio, DateTime? fin)
+        {
+            if (inicio == null || fin == null)
+            {
+                ViewBag.Mensaje = "Seleccione un rango de fechas.";
+                return View(new List<Inmueble>());
+            }
+
+            var lista = repoInmuebles.ObtenerLibresEntreFechas(inicio.Value, fin.Value);
+
+            // Guardar en ViewBag con formato ISO para que el input date lo entienda
+            ViewBag.Inicio = inicio.Value.ToString("yyyy-MM-dd");
+            ViewBag.Fin = fin.Value.ToString("yyyy-MM-dd");
+
+            return View(lista);
+        }
+
+
     }
 }

@@ -1,0 +1,41 @@
+@model IEnumerable<InmobiliariaApp.Models.Inmueble>
+@{
+    ViewData["Title"] = "Inmuebles por Propietario";
+    var propietario = ViewBag.Propietario as InmobiliariaApp.Models.Propietario;
+}
+
+<h1>
+    @if (propietario != null)
+    {
+        @:Inmuebles de @propietario.Apellido @propietario.Nombre
+    }
+    else
+    {
+        @:Inmuebles del propietario
+    }
+</h1>
+
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Dirección</th>
+            <th>Uso</th>
+            <th>Tipo</th>
+            <th>Ambientes</th>
+            <th>Precio</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.Direccion</td>
+            <td>@item.Uso</td>
+            <td>@item.Tipo</td>
+            <td>@item.Ambientes</td>
+            <td>@item.Precio.ToString("C")</td>
+        </tr>
+    }
+    </tbody>
+</table>

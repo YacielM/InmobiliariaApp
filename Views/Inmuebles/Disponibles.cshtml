@@ -1,0 +1,32 @@
+@model IEnumerable<InmobiliariaApp.Models.Inmueble>
+@{
+    ViewData["Title"] = "Inmuebles Disponibles";
+}
+
+<h1>Inmuebles Disponibles</h1>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Dirección</th>
+            <th>Uso</th>
+            <th>Tipo</th>
+            <th>Ambientes</th>
+            <th>Precio</th>
+            <th>Propietario</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.Direccion</td>
+            <td>@item.Uso</td>
+            <td>@item.Tipo</td>
+            <td>@item.Ambientes</td>
+            <td>@item.Precio.ToString("C")</td>
+            <td>@item.Propietario.Apellido @item.Propietario.Nombre</td>
+        </tr>
+    }
+    </tbody>
+</table>

@@ -4,6 +4,7 @@ using InmobiliariaApp.Models;
 using Microsoft.AspNetCore.Authorization;
 namespace InmobiliariaApp.Controllers
  {
+    [Authorize]
     public class PropietariosController : Controller
     {
         private readonly RepositorioPropietarios _repositorioPropietarios;

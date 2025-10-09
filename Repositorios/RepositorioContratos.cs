@@ -140,7 +140,7 @@ namespace InmobiliariaApp.Models
             return res;
         }
 
-        // 🔎 Nuevo: método para controlar superposición de fechas
+        //método para controlar superposición de fechas
         public bool ExisteSuperposicion(int idInmueble, DateTime inicio, DateTime fin, int? idContrato = null)
         {
             using (var conn = GetConnection())
@@ -161,5 +161,79 @@ namespace InmobiliariaApp.Models
                 }
             }
         }
+        // Contratos vigentes (hoy entre FechaInicio y FechaFin)
+        public List<Contrato> ObtenerVigentes()
+        {
+            var lista = new List<Contrato>();
+            using (var conn = GetConnection())
+            {
+                var sql = @"SELECT c.IdContrato, c.IdInmueble, c.IdInquilino, c.FechaInicio, c.FechaFin, c.MontoMensual,
+                                i.Direccion,
+                                inq.NombreCompleto
+                            FROM Contratos c
+                            INNER JOIN Inmuebles i ON c.IdInmueble = i.IdInmueble
+                            INNER JOIN Inquilinos inq ON c.IdInquilino = inq.IdInquilino
+                            WHERE @hoy BETWEEN c.FechaInicio AND c.FechaFin";
+                using (var cmd = new MySqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@hoy", DateTime.Today);
+                    conn.Open();
+                    var reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        lista.Add(new Contrato
+                        {
+                            IdContrato = reader.GetInt32(0),
+                            IdInmueble = reader.GetInt32(1),
+                            IdInquilino = reader.GetInt32(2),
+                            FechaInicio = reader.GetDateTime(3),
+                            FechaFin = reader.GetDateTime(4),
+                            MontoMensual = reader.GetDecimal(5),
+                            Inmueble = new Inmueble { Direccion = reader.GetString(6) },
+                            Inquilino = new Inquilino { NombreCompleto = reader.GetString(7) }
+                        });
+                    }
+                }
+            }
+            return lista;
+        }
+
+        // Contratos de un inmueble en particular
+        public List<Contrato> ObtenerPorInmueble(int idInmueble)
+        {
+            var lista = new List<Contrato>();
+            using (var conn = GetConnection())
+            {
+                var sql = @"SELECT c.IdContrato, c.IdInmueble, c.IdInquilino, c.FechaInicio, c.FechaFin, c.MontoMensual,
+                                i.Direccion,
+                                inq.NombreCompleto
+                            FROM Contratos c
+                            INNER JOIN Inmuebles i ON c.IdInmueble = i.IdInmueble
+                            INNER JOIN Inquilinos inq ON c.IdInquilino = inq.IdInquilino
+                            WHERE c.IdInmueble = @idInmueble";
+                using (var cmd = new MySqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@idInmueble", idInmueble);
+                    conn.Open();
+                    var reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        lista.Add(new Contrato
+                        {
+                            IdContrato = reader.GetInt32(0),
+                            IdInmueble = reader.GetInt32(1),
+                            IdInquilino = reader.GetInt32(2),
+                            FechaInicio = reader.GetDateTime(3),
+                            FechaFin = reader.GetDateTime(4),
+                            MontoMensual = reader.GetDecimal(5),
+                            Inmueble = new Inmueble { Direccion = reader.GetString(6) },
+                            Inquilino = new Inquilino { NombreCompleto = reader.GetString(7) }
+                        });
+                    }
+                }
+            }
+            return lista;
+        }
+
     }
 }

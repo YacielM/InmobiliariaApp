@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace InmobiliariaApp.Controllers
 {
+    [Authorize]
     public class ContratosController : Controller
     {
         private readonly RepositorioContratos repo;
@@ -101,5 +102,21 @@ namespace InmobiliariaApp.Controllers
             repo.Baja(id);
             return RedirectToAction(nameof(Index));
         }
+
+        // GET: /Contratos/Vigentes
+        public IActionResult Vigentes()
+        {
+            var lista = repo.ObtenerVigentes();
+            return View(lista);
+        }
+
+        // GET: /Contratos/PorInmueble/5
+        public IActionResult PorInmueble(int id)
+        {
+            var lista = repo.ObtenerPorInmueble(id);
+            ViewBag.Inmueble = repoInmuebles.ObtenerPorId(id); // para mostrar dirección en la vista
+            return View(lista);
+        }
+
     }
 }

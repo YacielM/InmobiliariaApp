@@ -1,0 +1,31 @@
+@model IEnumerable<InmobiliariaApp.Models.Contrato>
+
+@{
+    ViewData["Title"] = "Contratos por Inmueble";
+    var inmueble = ViewBag.Inmueble as InmobiliariaApp.Models.Inmueble;
+}
+
+<h1>Contratos del Inmueble: @inmueble?.Direccion</h1>
+
+<table class="table table-striped table-bordered">
+    <thead class="table-dark">
+        <tr>
+            <th>Contrato</th>
+            <th>Inquilino</th>
+            <th>Fecha Inicio</th>
+            <th>Fecha Fin</th>
+            <th>Monto Mensual</th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>Contrato #@item.IdContrato</td>
+            <td>@item.Inquilino?.NombreCompleto</td>
+            <td>@item.FechaInicio.ToShortDateString()</td>
+            <td>@item.FechaFin.ToShortDateString()</td>
+            <td>@item.MontoMensual.ToString("C")</td>
+        </tr>
+}
+    </tbody>
+</table>

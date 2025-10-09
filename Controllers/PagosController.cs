@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace InmobiliariaApp.Controllers
 {
+    [Authorize]
     public class PagosController : Controller
     {
         private readonly RepositorioPagos repoPagos;
@@ -136,6 +137,13 @@ namespace InmobiliariaApp.Controllers
                 });
 
             ViewBag.Contratos = new SelectList(contratos, "IdContrato", "Texto", idSeleccionado);
+        }
+
+        public IActionResult PorContrato(int idContrato)
+        {
+            var lista = repoPagos.ObtenerPorContrato(idContrato);
+            ViewBag.IdContrato = idContrato;
+            return View("Index", lista);
         }
     }
 }

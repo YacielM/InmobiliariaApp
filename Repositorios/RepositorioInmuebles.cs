@@ -118,7 +118,7 @@ namespace InmobiliariaApp.Data.Repositorios
                             SET Direccion=@Direccion, Uso=@Uso, Tipo=@Tipo, Ambientes=@Ambientes,
                                 Precio=@Precio, IdPropietario=@IdPropietario
                             WHERE IdInmueble=@IdInmueble";
-            using (var cmd = new MySqlCommand(sql, conn))
+                using (var cmd = new MySqlCommand(sql, conn))
                 {
                     cmd.Parameters.AddWithValue("@Direccion", inmueble.Direccion);
                     cmd.Parameters.AddWithValue("@Uso", inmueble.Uso);
@@ -145,5 +145,148 @@ namespace InmobiliariaApp.Data.Repositorios
                 }
             }
         }
+        
+        // Inmuebles disponibles: sin contratos vigentes hoy
+        public List<Inmueble> ObtenerDisponiblesHoy()
+        {
+            var lista = new List<Inmueble>();
+            using (var conn = GetConnection())
+            {
+                conn.Open();
+                var sql = @"
+                    SELECT i.IdInmueble, i.Direccion, i.Uso, i.Tipo, i.Ambientes, i.Precio, i.IdPropietario,
+                        p.Nombre, p.Apellido
+                    FROM Inmuebles i
+                    INNER JOIN Propietarios p ON i.IdPropietario = p.IdPropietario
+                    WHERE NOT EXISTS (
+                        SELECT 1
+                        FROM Contratos c
+                        WHERE c.IdInmueble = i.IdInmueble
+                        AND @hoy BETWEEN c.FechaInicio AND c.FechaFin
+                    )
+                    ORDER BY i.IdInmueble DESC";
+                using (var cmd = new MySqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@hoy", DateTime.Today);
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            lista.Add(new Inmueble
+                            {
+                                IdInmueble = reader.GetInt32(0),
+                                Direccion = reader.GetString(1),
+                                Uso = reader.GetString(2),
+                                Tipo = reader.GetString(3),
+                                Ambientes = reader.GetInt32(4),
+                                Precio = reader.GetDecimal(5),
+                                IdPropietario = reader.GetInt32(6),
+                                Propietario = new Propietario
+                                {
+                                    Nombre = reader.GetString(7),
+                                    Apellido = reader.GetString(8)
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+            return lista;
+        }
+
+        // Inmuebles de un propietario (tu método ya estaba bien conceptualmente)
+        public List<Inmueble> ObtenerPorPropietario(int idPropietario)
+        {
+            var lista = new List<Inmueble>();
+            using (var conn = GetConnection())
+            {
+                conn.Open();
+                var sql = @"
+                    SELECT i.IdInmueble, i.Direccion, i.Uso, i.Tipo, i.Ambientes, i.Precio, i.IdPropietario,
+                        p.Nombre, p.Apellido
+                    FROM Inmuebles i
+                    INNER JOIN Propietarios p ON i.IdPropietario = p.IdPropietario
+                    WHERE i.IdPropietario = @idPropietario
+                    ORDER BY i.IdInmueble DESC";
+                using (var cmd = new MySqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@idPropietario", idPropietario);
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            lista.Add(new Inmueble
+                            {
+                                IdInmueble = reader.GetInt32(0),
+                                Direccion = reader.GetString(1),
+                                Uso = reader.GetString(2),
+                                Tipo = reader.GetString(3),
+                                Ambientes = reader.GetInt32(4),
+                                Precio = reader.GetDecimal(5),
+                                IdPropietario = reader.GetInt32(6),
+                                Propietario = new Propietario
+                                {
+                                    Nombre = reader.GetString(7),
+                                    Apellido = reader.GetString(8)
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+            return lista;
+        }
+
+        // Inmuebles libres entre dos fechas (sin contratos superpuestos)
+        public List<Inmueble> ObtenerLibresEntreFechas(DateTime inicio, DateTime fin)
+        {
+            var lista = new List<Inmueble>();
+            using (var conn = GetConnection())
+            {
+                conn.Open();
+                var sql = @"
+                    SELECT i.IdInmueble, i.Direccion, i.Uso, i.Tipo, i.Ambientes, i.Precio, i.IdPropietario,
+                        p.Nombre, p.Apellido
+                    FROM Inmuebles i
+                    INNER JOIN Propietarios p ON i.IdPropietario = p.IdPropietario
+                    WHERE NOT EXISTS (
+                        SELECT 1
+                        FROM Contratos c
+                        WHERE c.IdInmueble = i.IdInmueble
+                        AND c.FechaInicio <= @fin
+                        AND c.FechaFin >= @inicio
+                    )
+                    ORDER BY i.IdInmueble DESC";
+                using (var cmd = new MySqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@inicio", inicio);
+                    cmd.Parameters.AddWithValue("@fin", fin);
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            lista.Add(new Inmueble
+                            {
+                                IdInmueble = reader.GetInt32(0),
+                                Direccion = reader.GetString(1),
+                                Uso = reader.GetString(2),
+                                Tipo = reader.GetString(3),
+                                Ambientes = reader.GetInt32(4),
+                                Precio = reader.GetDecimal(5),
+                                IdPropietario = reader.GetInt32(6),
+                                Propietario = new Propietario
+                                {
+                                    Nombre = reader.GetString(7),
+                                    Apellido = reader.GetString(8)
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+            return lista;
+        }
+
+
     }
 }

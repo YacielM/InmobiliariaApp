@@ -1,0 +1,58 @@
+@model IEnumerable<InmobiliariaApp.Models.Inmueble>
+@{
+    ViewData["Title"] = "Inmuebles Libres entre Fechas";
+}
+
+<h1>Inmuebles Libres entre Fechas</h1>
+
+<form method="get" asp-action="LibresEntreFechas">
+    <div class="row mb-3">
+        <div class="col">
+            <label>Fecha Inicio</label>
+            <input type="date" name="inicio" class="form-control" value="@ViewBag.Inicio" />
+        </div>
+        <div class="col">
+            <label>Fecha Fin</label>
+            <input type="date" name="fin" class="form-control" value="@ViewBag.Fin" />
+        </div>
+        <div class="col">
+            <label>&nbsp;</label>
+            <button type="submit" class="btn btn-primary form-control">Buscar</button>
+        </div>
+    </div>
+</form>
+
+
+@if (ViewBag.Mensaje != null)
+{
+    <div class="alert alert-info">@ViewBag.Mensaje</div>
+}
+
+@if (Model.Any())
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Dirección</th>
+                <th>Uso</th>
+                <th>Tipo</th>
+                <th>Ambientes</th>
+                <th>Precio</th>
+                <th>Propietario</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Direccion</td>
+                <td>@item.Uso</td>
+                <td>@item.Tipo</td>
+                <td>@item.Ambientes</td>
+                <td>@item.Precio.ToString("C")</td>
+                <td>@item.Propietario.Apellido @item.Propietario.Nombre</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}

@@ -34,8 +34,10 @@
     </a>
 
     <a asp-controller="Pagos"
-       asp-action="Index"
-       class="btn btn-outline-primary">
-        Ver pagos
-    </a>
+        asp-action="PorContrato" 
+        asp-route-idContrato="@Model.IdContrato" 
+        class="btn btn-success">
+        💰 Ver pagos
+   </a>
+
 </div>

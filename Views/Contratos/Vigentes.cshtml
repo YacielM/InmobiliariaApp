@@ -1,15 +1,10 @@
 @model IEnumerable<InmobiliariaApp.Models.Contrato>
 
 @{
-    ViewData["Title"] = "Listado de Contratos";
+    ViewData["Title"] = "Contratos Vigentes";
 }
 
-<h1>Contratos</h1>
-
-<p>
-    <a asp-action="Create" class="btn btn-primary">➕ Crear nuevo</a>
-    <a asp-action="Vigentes" class="btn btn-success ms-2">📅 Ver vigentes</a>
-</p>
+<h1>Contratos Vigentes</h1>
 
 <table class="table table-striped table-bordered">
     <thead class="table-dark">
@@ -20,7 +15,6 @@
             <th>Fecha Inicio</th>
             <th>Fecha Fin</th>
             <th>Monto Mensual</th>
-            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -32,11 +26,6 @@
             <td>@item.FechaInicio.ToShortDateString()</td>
             <td>@item.FechaFin.ToShortDateString()</td>
             <td>@item.MontoMensual.ToString("C")</td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.IdContrato" class="btn btn-warning btn-sm">✏ Editar</a>
-                <a asp-action="Details" asp-route-id="@item.IdContrato" class="btn btn-info btn-sm text-white">ℹ Detalles</a>
-                <a asp-action="Delete" asp-route-id="@item.IdContrato" class="btn btn-danger btn-sm">🗑 Eliminar</a>
-            </td>
         </tr>
 }
     </tbody>

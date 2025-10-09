@@ -26,7 +26,11 @@
         <dd class="col-sm-10">@Model.Email</dd>
     </dl>
 </div>
-<div>
+
+<div class="mt-3">
     <a asp-action="Edit" asp-route-id="@Model.IdPropietario" class="btn btn-warning">✏ Editar</a>
     <a asp-action="Index" class="btn btn-secondary">⬅ Volver</a>
+    <a asp-controller="Inmuebles" asp-action="PorPropietario" asp-route-id="@Model.IdPropietario" class="btn btn-info text-white">
+        🏠 Ver inmuebles
+    </a>
 </div>
