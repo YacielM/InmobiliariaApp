@@ -6,9 +6,8 @@
 
 <h1>Crear Contrato</h1>
 
-<form asp-action="Create" method="post">
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
+<form asp-action="Create" method="post">
     <div class="mb-3">
         <label asp-for="IdInmueble" class="form-label">Inmueble</label>
         <select asp-for="IdInmueble" class="form-select" asp-items="ViewBag.Inmuebles"></select>
@@ -42,3 +41,7 @@
     <button type="submit" class="btn btn-primary">💾 Guardar</button>
     <a asp-action="Index" class="btn btn-secondary">⬅ Volver</a>
 </form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -27,6 +27,21 @@
     <dd class="col-sm-10">@Model.MontoMensual.ToString("C")</dd>
 </dl>
 
+@if (User.IsInRole("Administrador"))
+{
+    <h3>Auditoría</h3>
+    <dl class="row">
+        <dt class="col-sm-2">Creado por</dt>
+        <dd class="col-sm-10">@Model.CreadoPor</dd>
+
+        @if (!string.IsNullOrEmpty(Model.TerminadoPor))
+        {
+            <dt class="col-sm-2">Terminado por</dt>
+            <dd class="col-sm-10">@Model.TerminadoPor</dd>
+        }
+    </dl>
+}
+
 <a asp-action="Edit" asp-route-id="@Model.IdContrato" class="btn btn-warning">✏ Editar</a>
 <a asp-action="Delete" asp-route-id="@Model.IdContrato" class="btn btn-danger">🗑 Eliminar</a>
 <a asp-action="Index" class="btn btn-secondary">⬅ Volver</a>
@@ -44,7 +59,6 @@
         class="btn btn-success">
         💰 Ver pagos
    </a>
-
 </div>
 <div class="mt-3">
     <a asp-action="Renovar" asp-route-id="@Model.IdContrato" class="btn btn-outline-primary">

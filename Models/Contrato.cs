@@ -27,7 +27,11 @@ namespace InmobiliariaApp.Models
         public DateTime? FechaTerminacionAnticipada { get; set; }
         public decimal? MultaTerminacion { get; set; }
 
-        // Opcional: marcar si la multa ya fue pagada
+        // Auditoría
+        public string? CreadoPor { get; set; }
+        public string? TerminadoPor { get; set; }
+
+        // marcar si la multa ya fue pagada
         public bool MultaPagada { get; set; } = false;
 
         [ValidateNever]

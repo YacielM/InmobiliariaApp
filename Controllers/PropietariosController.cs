@@ -41,6 +41,7 @@ namespace InmobiliariaApp.Controllers
             if (ModelState.IsValid)
             {
                 _repositorioPropietarios.Insert(propietario);
+                TempData["Msg"] = "Propietario creado correctamente.";
                 return RedirectToAction(nameof(Index));
             }
             return View(propietario);

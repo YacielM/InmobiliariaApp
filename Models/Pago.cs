@@ -18,6 +18,9 @@ namespace InmobiliariaApp.Models
         [Required]
         public decimal Importe { get; set; }
 
+        // Auditoría
+        public string? CreadoPor { get; set; }
+
         [ValidateNever]
         public Contrato Contrato { get; set; }
     }

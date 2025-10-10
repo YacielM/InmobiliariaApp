@@ -33,8 +33,9 @@
                         @if (User.Identity != null && User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item">
-                                <span class="navbar-text text-white me-3">
-                                    👤 @User.FindFirst("FullName")?.Value (@User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value)
+                                <span class="navbar-text text-white me-3 fw-bold">
+                                    👋 ¡Bienvenido, @User.FindFirst("FullName")?.Value!
+                                    <span class="badge bg-primary ms-2">@User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value</span>
                                 </span>
                             </li>
                             <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="EditarPerfil">Editar Perfil</a></li>
@@ -54,6 +55,22 @@
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
+        <div class="container">
+            @if (TempData["Msg"] != null)
+            {
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    @TempData["Msg"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                </div>
+            }
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @TempData["Error"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                </div>
+            }
+        </div>
     </div>
 
     <footer class="border-top footer text-muted mt-4">

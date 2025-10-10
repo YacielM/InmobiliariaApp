@@ -13,12 +13,12 @@ namespace InmobiliariaApp.Data.Repositorios
             var lista = new List<Pago>();
             using (var conn = GetConnection())
             {
-                var sql = @"SELECT p.IdPago, p.IdContrato, p.Fecha, p.Importe,
-                   i.Direccion, inq.NombreCompleto
-            FROM Pagos p
-            INNER JOIN Contratos c ON p.IdContrato = c.IdContrato
-            INNER JOIN Inmuebles i ON c.IdInmueble = i.IdInmueble
-            INNER JOIN Inquilinos inq ON c.IdInquilino = inq.IdInquilino";
+                var sql = @"SELECT p.IdPago, p.IdContrato, p.Fecha, p.Importe, p.CreadoPor,
+                                i.Direccion, inq.NombreCompleto
+                            FROM Pagos p
+                            INNER JOIN Contratos c ON p.IdContrato = c.IdContrato
+                            INNER JOIN Inmuebles i ON c.IdInmueble = i.IdInmueble
+                            INNER JOIN Inquilinos inq ON c.IdInquilino = inq.IdInquilino";
 
                 using (var cmd = new MySqlCommand(sql, conn))
                 {
@@ -32,11 +32,12 @@ namespace InmobiliariaApp.Data.Repositorios
                             IdContrato = reader.GetInt32(1),
                             Fecha = reader.GetDateTime(2),
                             Importe = reader.GetDecimal(3),
+                            CreadoPor = reader.GetString(4), // 👈 nuevo
                             Contrato = new Contrato
                             {
                                 IdContrato = reader.GetInt32(1),
-                                Inmueble = new Inmueble { Direccion = reader.GetString(4) },
-                                Inquilino = new Inquilino { NombreCompleto = reader.GetString(5) }
+                                Inmueble = new Inmueble { Direccion = reader.GetString(5) },
+                                Inquilino = new Inquilino { NombreCompleto = reader.GetString(6) }
                             }
                         });
                     }
@@ -45,12 +46,13 @@ namespace InmobiliariaApp.Data.Repositorios
             return lista;
         }
 
+
         public Pago? ObtenerPorId(int id)
         {
             Pago? pago = null;
             using (var conn = GetConnection())
             {
-                var sql = @"SELECT IdPago, IdContrato, Fecha, Importe
+                var sql = @"SELECT IdPago, IdContrato, Fecha, Importe, CreadoPor
                             FROM Pagos WHERE IdPago=@id";
                 using (var cmd = new MySqlCommand(sql, conn))
                 {
@@ -64,7 +66,8 @@ namespace InmobiliariaApp.Data.Repositorios
                             IdPago = reader.GetInt32(0),
                             IdContrato = reader.GetInt32(1),
                             Fecha = reader.GetDateTime(2),
-                            Importe = reader.GetDecimal(3)
+                            Importe = reader.GetDecimal(3),
+                            CreadoPor = reader.GetString(4) // 👈 nuevo
                         };
                     }
                 }
@@ -72,22 +75,25 @@ namespace InmobiliariaApp.Data.Repositorios
             return pago;
         }
 
+
         public int Alta(Pago pago)
         {
             using (var conn = GetConnection())
             {
-                var sql = @"INSERT INTO Pagos (IdContrato, Fecha, Importe)
-                            VALUES (@IdContrato, @Fecha, @Importe)";
+                var sql = @"INSERT INTO Pagos (IdContrato, Fecha, Importe, CreadoPor)
+                            VALUES (@IdContrato, @Fecha, @Importe, @CreadoPor)";
                 using (var cmd = new MySqlCommand(sql, conn))
                 {
                     cmd.Parameters.AddWithValue("@IdContrato", pago.IdContrato);
                     cmd.Parameters.AddWithValue("@Fecha", pago.Fecha);
                     cmd.Parameters.AddWithValue("@Importe", pago.Importe);
+                    cmd.Parameters.AddWithValue("@CreadoPor", pago.CreadoPor);
                     conn.Open();
                     return cmd.ExecuteNonQuery();
                 }
             }
         }
+
 
         public int Modificacion(Pago pago)
         {

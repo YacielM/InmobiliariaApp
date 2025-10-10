@@ -19,6 +19,15 @@
     </dl>
 </div>
 
+@if (User.IsInRole("Administrador"))
+{
+    <h3>Auditoría</h3>
+    <dl class="row">
+        <dt class="col-sm-2">Creado por</dt>
+        <dd class="col-sm-10">@Model.CreadoPor</dd>
+    </dl>
+}
+
 <p>
     <a asp-action="Edit" asp-route-id="@Model.IdPago" class="btn btn-warning">✏ Editar</a>
     <a asp-action="Index" class="btn btn-secondary">⬅ Volver</a>

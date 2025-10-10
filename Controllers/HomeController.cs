@@ -37,7 +37,7 @@ namespace InmobiliariaApp.Controllers
         {
             var usuario = repoUsuarios.ObtenerPorEmail(email);
 
-            if (usuario == null || usuario.Clave != clave) // ⚠️ en real: comparar hash
+            if (usuario == null || usuario.Clave != clave) // comparar hash
             {
                 ModelState.AddModelError(string.Empty, "Credenciales inválidas.");
                 ViewBag.ReturnUrl = returnUrl;
@@ -47,7 +47,7 @@ namespace InmobiliariaApp.Controllers
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, usuario.Email), // email
-                new Claim("FullName", usuario.Nombre + " " + usuario.Apellido), // 👈 nombre completo
+                new Claim("FullName", usuario.Nombre + " " + usuario.Apellido), //nombre completo
                 new Claim("IdUsuario", usuario.IdUsuario.ToString()),
                 new Claim(ClaimTypes.Role, usuario.Rol),
             };

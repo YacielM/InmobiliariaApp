@@ -70,7 +70,7 @@ namespace InmobiliariaApp.Controllers
                 CargarContratos(pago.IdContrato);
                 return View(pago);
             }
-
+            pago.CreadoPor = User.Identity?.Name ?? "Sistema"; 
             repoPagos.Alta(pago);
             TempData["Msg"] = "Pago registrado correctamente.";
             return RedirectToAction(nameof(Index));

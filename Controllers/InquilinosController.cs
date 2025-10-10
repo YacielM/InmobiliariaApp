@@ -48,6 +48,7 @@ namespace InmobiliariaApp.Controllers
             if (ModelState.IsValid)
             {
                 _repositorioInquilinos.Alta(inquilino);
+                TempData["Msg"] = "Inquilino creado correctamente.";
                 return RedirectToAction(nameof(Index));
             }
             return View(inquilino);

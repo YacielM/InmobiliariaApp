@@ -20,7 +20,7 @@ namespace InmobiliariaApp.Controllers
             repo = new RepositorioContratos(configuration);
             repoInmuebles = new RepositorioInmuebles(configuration);
             repoInquilinos = new RepositorioInquilinos(configuration);
-            repoPagos = new RepositorioPagos(configuration); // 👈 agregado
+            repoPagos = new RepositorioPagos(configuration); 
         }
 
         // GET: /Contratos
@@ -57,7 +57,13 @@ namespace InmobiliariaApp.Controllers
             }
             if (ModelState.IsValid)
             {
+                contrato.CreadoPor = User.Identity?.Name ?? "Sistema";
+                if (string.IsNullOrEmpty(contrato.CreadoPor))
+                {
+                    contrato.CreadoPor = "Sistema";
+                }
                 repo.Alta(contrato);
+                TempData["Msg"] = "Contrato creado correctamente.";
                 return RedirectToAction(nameof(Index));
             }
             ViewBag.Inmuebles = new SelectList(repoInmuebles.ObtenerTodos(), "IdInmueble", "Direccion", contrato.IdInmueble);
@@ -195,14 +201,18 @@ namespace InmobiliariaApp.Controllers
             }
 
             var fechaCorte = DateTime.Today;
-            repo.TerminarAnticipado(id, fechaCorte, multa);
+            var usuario = User.Identity?.Name ?? "Sistema";
+
+            //Aca pasamos quien lo terminó
+            repo.TerminarAnticipado(id, fechaCorte, multa, usuario);
 
             // Registrar pago de multa
             var pagoMulta = new Pago
             {
                 IdContrato = id,
                 Fecha = fechaCorte,
-                Importe = multa
+                Importe = multa,
+                CreadoPor = usuario // aca guarda quien registro el pago
             };
             repoPagos.Alta(pagoMulta);
 

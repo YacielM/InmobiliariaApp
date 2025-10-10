@@ -13,37 +13,38 @@ namespace InmobiliariaApp.Models
         public List<Contrato> ObtenerTodos()
         {
             var lista = new List<Contrato>();
-            using (var connection = GetConnection())
+            using (var conn = GetConnection())
             {
-                connection.Open();
                 var sql = @"SELECT c.IdContrato, c.IdInmueble, c.IdInquilino, c.FechaInicio, c.FechaFin, c.MontoMensual,
                                 c.FechaTerminacionAnticipada, c.MultaTerminacion, c.MultaPagada,
+                                c.CreadoPor, c.TerminadoPor,
                                 i.Direccion,
                                 inq.NombreCompleto
                             FROM Contratos c
                             INNER JOIN Inmuebles i ON c.IdInmueble = i.IdInmueble
                             INNER JOIN Inquilinos inq ON c.IdInquilino = inq.IdInquilino";
-                using (var command = new MySqlCommand(sql, connection))
+                using (var cmd = new MySqlCommand(sql, conn))
                 {
-                    using (var reader = command.ExecuteReader())
+                    conn.Open();
+                    var reader = cmd.ExecuteReader();
+                    while (reader.Read())
                     {
-                        while (reader.Read())
+                        lista.Add(new Contrato
                         {
-                            lista.Add(new Contrato
-                            {
-                                IdContrato = reader.GetInt32(0),
-                                IdInmueble = reader.GetInt32(1),
-                                IdInquilino = reader.GetInt32(2),
-                                FechaInicio = reader.GetDateTime(3),
-                                FechaFin = reader.GetDateTime(4),
-                                MontoMensual = reader.GetDecimal(5),
-                                FechaTerminacionAnticipada = reader.IsDBNull(6) ? (DateTime?)null : reader.GetDateTime(6),
-                                MultaTerminacion = reader.IsDBNull(7) ? (decimal?)null : reader.GetDecimal(7),
-                                MultaPagada = !reader.IsDBNull(8) && reader.GetBoolean(8),
-                                Inmueble = new Inmueble { Direccion = reader.GetString(9) },
-                                Inquilino = new Inquilino { NombreCompleto = reader.GetString(10) }
-                            });
-                        }
+                            IdContrato = reader.GetInt32(0),
+                            IdInmueble = reader.GetInt32(1),
+                            IdInquilino = reader.GetInt32(2),
+                            FechaInicio = reader.GetDateTime(3),
+                            FechaFin = reader.GetDateTime(4),
+                            MontoMensual = reader.GetDecimal(5),
+                            FechaTerminacionAnticipada = reader.IsDBNull(6) ? (DateTime?)null : reader.GetDateTime(6),
+                            MultaTerminacion = reader.IsDBNull(7) ? (decimal?)null : reader.GetDecimal(7),
+                            MultaPagada = !reader.IsDBNull(8) && reader.GetBoolean(8),
+                            CreadoPor = reader.IsDBNull(9) ? null : reader.GetString(9),
+                            TerminadoPor = reader.IsDBNull(10) ? null : reader.GetString(10),
+                            Inmueble = new Inmueble { Direccion = reader.GetString(11) },
+                            Inquilino = new Inquilino { NombreCompleto = reader.GetString(12) }
+                        });
                     }
                 }
             }
@@ -57,6 +58,7 @@ namespace InmobiliariaApp.Models
             {
                 var sql = @"SELECT c.IdContrato, c.IdInmueble, c.IdInquilino, c.FechaInicio, c.FechaFin, c.MontoMensual,
                                 c.FechaTerminacionAnticipada, c.MultaTerminacion, c.MultaPagada,
+                                c.CreadoPor, c.TerminadoPor,
                                 i.Direccion,
                                 inq.NombreCompleto
                             FROM Contratos c
@@ -81,8 +83,10 @@ namespace InmobiliariaApp.Models
                             FechaTerminacionAnticipada = reader.IsDBNull(6) ? (DateTime?)null : reader.GetDateTime(6),
                             MultaTerminacion = reader.IsDBNull(7) ? (decimal?)null : reader.GetDecimal(7),
                             MultaPagada = !reader.IsDBNull(8) && reader.GetBoolean(8),
-                            Inmueble = new Inmueble { Direccion = reader.GetString(9) },
-                            Inquilino = new Inquilino { NombreCompleto = reader.GetString(10) }
+                            CreadoPor = reader.IsDBNull(9) ? null : reader.GetString(9),
+                            TerminadoPor = reader.IsDBNull(10) ? null : reader.GetString(10),
+                            Inmueble = new Inmueble { Direccion = reader.GetString(11) },
+                            Inquilino = new Inquilino { NombreCompleto = reader.GetString(12) }
                         };
                     }
                 }
@@ -95,8 +99,9 @@ namespace InmobiliariaApp.Models
             int res = -1;
             using (var conn = GetConnection())
             {
-                var sql = @"INSERT INTO Contratos (IdInmueble, IdInquilino, FechaInicio, FechaFin, MontoMensual)
-                            VALUES (@IdInmueble, @IdInquilino, @FechaInicio, @FechaFin, @MontoMensual)";
+                var sql = @"INSERT INTO Contratos 
+                            (IdInmueble, IdInquilino, FechaInicio, FechaFin, MontoMensual, CreadoPor)
+                            VALUES (@IdInmueble, @IdInquilino, @FechaInicio, @FechaFin, @MontoMensual, @CreadoPor)";
                 using (var cmd = new MySqlCommand(sql, conn))
                 {
                     cmd.Parameters.AddWithValue("@IdInmueble", contrato.IdInmueble);
@@ -104,12 +109,14 @@ namespace InmobiliariaApp.Models
                     cmd.Parameters.AddWithValue("@FechaInicio", contrato.FechaInicio);
                     cmd.Parameters.AddWithValue("@FechaFin", contrato.FechaFin);
                     cmd.Parameters.AddWithValue("@MontoMensual", contrato.MontoMensual);
+                    cmd.Parameters.AddWithValue("@CreadoPor", contrato.CreadoPor);
                     conn.Open();
                     res = cmd.ExecuteNonQuery();
                 }
             }
             return res;
         }
+
 
         public int Modificacion(Contrato contrato)
         {
@@ -273,14 +280,15 @@ namespace InmobiliariaApp.Models
             }
         }
 
-        public int TerminarAnticipado(int idContrato, DateTime fechaCorte, decimal? multa = null)
+        public int TerminarAnticipado(int idContrato, DateTime fechaCorte, decimal? multa = null, string terminadoPor = null)
         {
             using (var conn = GetConnection())
             {
                 var sql = @"UPDATE Contratos
                             SET FechaFin = @FechaFin,
                                 FechaTerminacionAnticipada = @FechaTerminacionAnticipada,
-                                MultaTerminacion = @MultaTerminacion
+                                MultaTerminacion = @MultaTerminacion,
+                                TerminadoPor = @TerminadoPor
                             WHERE IdContrato = @IdContrato";
                 using (var cmd = new MySqlCommand(sql, conn))
                 {
@@ -288,11 +296,13 @@ namespace InmobiliariaApp.Models
                     cmd.Parameters.AddWithValue("@FechaFin", fechaCorte);
                     cmd.Parameters.AddWithValue("@FechaTerminacionAnticipada", fechaCorte);
                     cmd.Parameters.AddWithValue("@MultaTerminacion", multa.HasValue ? multa.Value : (object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@TerminadoPor", terminadoPor ?? (object)DBNull.Value);
                     conn.Open();
                     return cmd.ExecuteNonQuery();
                 }
             }
         }
+
         public void MarcarMultaPagada(int idContrato)
         {
             using (var conn = GetConnection())
