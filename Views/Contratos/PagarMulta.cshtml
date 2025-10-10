@@ -1,0 +1,22 @@
+@model InmobiliariaApp.Models.Contrato
+
+@{
+    ViewData["Title"] = "Pagar Multa";
+}
+
+<h1>Pagar Multa</h1>
+
+<div class="alert alert-warning">
+    Está a punto de registrar el pago de la multa del contrato #@Model.IdContrato
+    correspondiente al inmueble <strong>@Model.Inmueble?.Direccion</strong>.
+</div>
+
+<form asp-action="PagarMulta" method="post">
+    <input type="hidden" name="id" value="@Model.IdContrato" />
+    <div class="mb-3">
+        <label class="form-label">Importe de la multa</label>
+        <input type="text" class="form-control" value="@Model.MultaTerminacion?.ToString("C")" readonly />
+    </div>
+    <button type="submit" class="btn btn-success">💵 Confirmar pago</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>

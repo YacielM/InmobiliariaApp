@@ -4,6 +4,11 @@
     ViewData["Title"] = "Listado de Contratos";
 }
 
+@if (TempData["Msg"] != null)
+{
+    <div class="alert alert-info">@TempData["Msg"]</div>
+}
+
 <h1>Contratos</h1>
 
 <p>
@@ -14,18 +19,20 @@
 <table class="table table-striped table-bordered">
     <thead class="table-dark">
         <tr>
+            <th>Estado</th>
             <th>Contrato</th>
             <th>Inmueble</th>
             <th>Inquilino</th>
             <th>Fecha Inicio</th>
             <th>Fecha Fin</th>
             <th>Monto Mensual</th>
-            <th></th>
+            <th>Acciones</th>
         </tr>
     </thead>
     <tbody>
 @foreach (var item in Model) {
         <tr>
+            <td>@item.Estado</td>
             <td>Contrato #@item.IdContrato</td>
             <td>@item.Inmueble?.Direccion</td>
             <td>@item.Inquilino?.NombreCompleto</td>
@@ -33,9 +40,21 @@
             <td>@item.FechaFin.ToShortDateString()</td>
             <td>@item.MontoMensual.ToString("C")</td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.IdContrato" class="btn btn-warning btn-sm">✏ Editar</a>
                 <a asp-action="Details" asp-route-id="@item.IdContrato" class="btn btn-info btn-sm text-white">ℹ Detalles</a>
-                <a asp-action="Delete" asp-route-id="@item.IdContrato" class="btn btn-danger btn-sm">🗑 Eliminar</a>
+
+                @* Acciones dinámicas según estado *@
+                @if (item.Estado == "Vigente")
+                {
+                    <a asp-action="TerminarAnticipado" asp-route-id="@item.IdContrato" class="btn btn-outline-danger btn-sm">⛔ Terminar</a>
+                }
+                else if (item.Estado == "Finalizado")
+                {
+                    <a asp-action="Renovar" asp-route-id="@item.IdContrato" class="btn btn-outline-primary btn-sm">🔁 Renovar</a>
+                }
+                else if (item.Estado == "Multado")
+                {
+                    <a asp-action="PagarMulta" asp-route-id="@item.IdContrato" class="btn btn-outline-success btn-sm">💵 Pagar multa</a>
+                }
             </td>
         </tr>
 }

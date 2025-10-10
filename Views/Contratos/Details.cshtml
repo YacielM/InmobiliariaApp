@@ -3,6 +3,10 @@
 @{
     ViewData["Title"] = "Detalles del Contrato";
 }
+@if (TempData["Msg"] != null)
+{
+    <div class="alert alert-info">@TempData["Msg"]</div>
+}
 
 <h1>Detalles</h1>
 
@@ -24,6 +28,7 @@
 </dl>
 
 <a asp-action="Edit" asp-route-id="@Model.IdContrato" class="btn btn-warning">✏ Editar</a>
+<a asp-action="Delete" asp-route-id="@Model.IdContrato" class="btn btn-danger">🗑 Eliminar</a>
 <a asp-action="Index" class="btn btn-secondary">⬅ Volver</a>
 <div class="mt-3">
     <a asp-controller="Pagos"
@@ -40,4 +45,13 @@
         💰 Ver pagos
    </a>
 
+</div>
+<div class="mt-3">
+    <a asp-action="Renovar" asp-route-id="@Model.IdContrato" class="btn btn-outline-primary">
+        🔁 Renovar contrato
+    </a>
+
+    <a asp-action="TerminarAnticipado" asp-route-id="@Model.IdContrato" class="btn btn-outline-danger">
+        ⛔ Terminar anticipadamente
+    </a>
 </div>

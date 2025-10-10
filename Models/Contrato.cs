@@ -23,19 +23,56 @@ namespace InmobiliariaApp.Models
         [Required]
         public decimal MontoMensual { get; set; }
 
-        [ValidateNever] // evita que el binder lo marque como requerido
+        // Terminación anticipada
+        public DateTime? FechaTerminacionAnticipada { get; set; }
+        public decimal? MultaTerminacion { get; set; }
+
+        // Opcional: marcar si la multa ya fue pagada
+        public bool MultaPagada { get; set; } = false;
+
+        [ValidateNever]
         public Inmueble Inmueble { get; set; }
 
-        [ValidateNever] // idem para inquilino
+        [ValidateNever]
         public Inquilino Inquilino { get; set; }
+
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
-    {
-        if (FechaFin < FechaInicio)
         {
-            yield return new ValidationResult(
-                "La fecha de fin no puede ser anterior a la fecha de inicio.",
-                new[] { nameof(FechaFin) });
+            if (FechaFin < FechaInicio)
+            {
+                yield return new ValidationResult(
+                    "La fecha de fin no puede ser anterior a la fecha de inicio.",
+                    new[] { nameof(FechaFin) });
+            }
         }
-    }
+
+        public string Estado
+        {
+            get
+            {
+                // 1. Multado (solo si la multa no fue pagada)
+                if (FechaTerminacionAnticipada.HasValue && MultaTerminacion.HasValue && MultaTerminacion.Value > 0 && !MultaPagada)
+                    return "Multado";
+
+                // 2. Finalizado por multa pagada
+                if (FechaTerminacionAnticipada.HasValue && MultaTerminacion.HasValue && MultaTerminacion.Value > 0 && MultaPagada)
+                    return "Finalizado";
+
+                // 3. Vigente
+                if (FechaInicio <= DateTime.Today && FechaFin >= DateTime.Today)
+                    return "Vigente";
+
+                // 4. Finalizado
+                if (FechaFin < DateTime.Today)
+                    return "Finalizado";
+
+                // 5. Pendiente
+                if (FechaInicio > DateTime.Today)
+                    return "Pendiente";
+
+                return "Desconocido";
+            }
+        }
+
     }
 }
